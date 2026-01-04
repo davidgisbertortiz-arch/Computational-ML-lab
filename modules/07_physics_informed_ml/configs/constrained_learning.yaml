@@ -1,0 +1,19 @@
+# Constrained Learning Configuration
+
+# Model architecture
+input_dim: 2  # [position, velocity]
+output_dim: 2  # [next position, next velocity]
+hidden_dims: [64, 64]
+
+# Training parameters
+n_train: 1000
+epochs: 2000
+lr: 0.001
+batch_size: 64
+
+# Conservation penalty
+lambda_conservation: 1.0
+conservation_type: "energy"  # energy, momentum, mass
+
+# Reproducibility
+seed: 42

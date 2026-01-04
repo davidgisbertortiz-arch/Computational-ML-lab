@@ -1,0 +1,23 @@
+# Demo experiment configuration
+
+name: "demo_experiment"
+description: "Binary classification with LogisticRegression"
+seed: 42
+
+# Output settings
+output_dir: "modules/00_repo_standards/reports"
+save_artifacts: true
+log_level: "INFO"
+mlflow_tracking: false
+
+# Data generation
+n_samples: 500
+n_features: 20
+n_informative: 15
+n_classes: 2
+test_size: 0.2
+
+# Model hyperparameters
+C: 1.0
+max_iter: 1000
+solver: "lbfgs"

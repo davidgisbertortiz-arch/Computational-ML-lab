@@ -49,6 +49,55 @@ coverage.xml
 *.py.cover
 .hypothesis/
 .pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Data
+data/*
+!data/.gitkeep
+!data/README.md
+
+# Reports (git LFS or ignore large artifacts)
+reports/*.png
+reports/*.pdf
+reports/*.h5
+reports/*.pth
+reports/*.ckpt
+*.weights
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ruff
+.ruff_cache/
+.pytest_cache/
 cover/
 
 # Translations

@@ -1,0 +1,18 @@
+# ODE PINN Configuration (Harmonic Oscillator)
+
+# Physics parameters
+omega: 1.0  # Angular frequency
+x0: 1.0  # Initial position
+v0: 0.0  # Initial velocity
+t_max: 10.0  # Integration time
+
+# Training parameters
+n_collocation: 200  # Number of collocation points
+hidden_dims: [32, 32, 32]
+epochs: 5000
+lr: 0.001
+lambda_physics: 1.0
+lambda_ic: 10.0  # Higher weight for initial conditions
+
+# Reproducibility
+seed: 42

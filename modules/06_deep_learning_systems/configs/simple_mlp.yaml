@@ -1,0 +1,43 @@
+# Simple MLP Configuration (for fast testing)
+
+name: "simple_mlp_test"
+seed: 42
+
+# Model
+model_type: "SimpleMLP"
+input_dim: 784
+hidden_dims: [256, 128]
+output_dim: 10
+dropout: 0.3
+
+# Training
+batch_size: 128
+num_epochs: 5
+learning_rate: 0.003
+weight_decay: 1e-5
+optimizer: "adam"
+
+# Engineering
+use_amp: false
+gradient_clip_norm: 1.0
+early_stop_patience: 3
+checkpoint_every: 1
+save_best_only: true
+
+# Data
+dataset: "mnist"
+data_dir: "data"
+val_split: 0.1
+num_workers: 4
+
+# Device
+device: "cpu"  # Use CPU for testing
+
+# Paths
+output_dir: "modules/06_deep_learning_systems/reports"
+checkpoint_dir: "modules/06_deep_learning_systems/reports/checkpoints"
+resume_from: null
+
+# Logging
+log_level: "INFO"
+save_artifacts: true

@@ -1,0 +1,29 @@
+# PDE PINN Configuration (1D Heat Equation)
+
+# Physics parameters
+alpha: 0.01  # Thermal diffusivity
+x_min: 0.0
+x_max: 1.0
+t_max: 1.0
+
+# Boundary conditions (Dirichlet)
+bc_left: 0.0
+bc_right: 0.0
+
+# Initial condition
+initial_condition: "gaussian"  # gaussian, sine, step
+
+# Training parameters
+n_collocation_x: 50
+n_collocation_t: 50
+n_boundary: 50
+n_initial: 50
+hidden_dims: [64, 64, 64, 64]
+epochs: 10000
+lr: 0.001
+lambda_physics: 1.0
+lambda_bc: 10.0
+lambda_ic: 10.0
+
+# Reproducibility
+seed: 42

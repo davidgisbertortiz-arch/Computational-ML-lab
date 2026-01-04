@@ -1,0 +1,18 @@
+name: logistic_baseline
+seed: 42
+
+model_type: logistic
+model_params:
+  C: 1.0
+  max_iter: 1000
+
+n_samples: 100000
+signal_fraction: 0.1
+
+cv_folds: 5
+calibrate: true
+optimize_threshold: true
+target_precision: 0.95
+
+output_dir: reports
+save_plots: true

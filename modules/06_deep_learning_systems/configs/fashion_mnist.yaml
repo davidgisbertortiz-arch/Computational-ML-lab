@@ -1,0 +1,43 @@
+# Fashion-MNIST Configuration
+
+name: "fashion_mnist"
+seed: 42
+
+# Model
+model_type: "CNNMnist"
+input_dim: 784
+hidden_dims: [128, 64]
+output_dim: 10
+dropout: 0.5
+
+# Training
+batch_size: 64
+num_epochs: 15
+learning_rate: 0.001
+weight_decay: 1e-4
+optimizer: "adam"
+
+# Engineering
+use_amp: false
+gradient_clip_norm: null
+early_stop_patience: 5
+checkpoint_every: 1
+save_best_only: true
+
+# Data
+dataset: "fashion_mnist"
+data_dir: "data"
+val_split: 0.1
+num_workers: 4
+
+# Device
+device: "auto"
+
+# Paths
+output_dir: "modules/06_deep_learning_systems/reports"
+checkpoint_dir: "modules/06_deep_learning_systems/reports/checkpoints"
+resume_from: null
+
+# Logging
+log_level: "INFO"
+save_artifacts: true

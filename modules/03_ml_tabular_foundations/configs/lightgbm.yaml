@@ -1,0 +1,25 @@
+name: lightgbm_production
+seed: 42
+
+model_type: lightgbm
+model_params:
+  n_estimators: 500
+  learning_rate: 0.05
+  num_leaves: 63
+  max_depth: 7
+  min_child_samples: 50
+  subsample: 0.8
+  colsample_bytree: 0.8
+  reg_alpha: 0.1
+  reg_lambda: 1.0
+
+n_samples: 100000
+signal_fraction: 0.1
+
+cv_folds: 5
+calibrate: true
+optimize_threshold: true
+target_precision: 0.95
+
+output_dir: reports
+save_plots: true

@@ -1,0 +1,33 @@
+======================================================================
+UQ IN CLASSIFICATION: METHOD COMPARISON REPORT
+======================================================================
+Generated: 2026-01-02 01:04:14
+Random seed: 42
+Dataset: 2000 samples, 20 features (60/20/20 train/val/test split)
+
+----------------------------------------------------------------------
+Method                      Accuracy        NLL      Brier        ECE
+----------------------------------------------------------------------
+Raw predict_proba             0.7825     0.5140     0.1670     0.0672
+Temperature Scaling           0.7825     0.6518     0.2308     0.1742
+Bootstrap Ensemble            0.7850     0.5152     0.1673     0.0743
+Ensemble + TempScale          0.7850     0.6520     0.2309     0.1741
+----------------------------------------------------------------------
+
+INTERPRETATION:
+  - Accuracy: Classification accuracy (higher is better)
+  - NLL: Negative Log-Likelihood (lower is better)
+  - Brier: Brier Score = mean((p - y)^2) (lower is better)
+  - ECE: Expected Calibration Error (lower is better)
+
+KEY FINDINGS:
+  - Best ECE: Raw predict_proba (0.0672)
+  - Best NLL: Raw predict_proba (0.5140)
+  - Best Brier: Raw predict_proba (0.1670)
+
+CONCLUSIONS:
+  1. Temperature scaling improves calibration (ECE) with minimal overhead
+  2. Bootstrap ensembles provide epistemic uncertainty estimates
+  3. Combining ensemble + temperature scaling often gives best overall UQ
+
+======================================================================

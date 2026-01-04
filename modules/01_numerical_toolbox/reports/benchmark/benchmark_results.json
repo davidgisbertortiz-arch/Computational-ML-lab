@@ -1,0 +1,83 @@
+[
+  {
+    "optimizer": "GD",
+    "problem": "quadratic_kappa_5",
+    "iterations": 500,
+    "final_loss": -2.1250006930852243,
+    "final_grad_norm": 2.6432609506493423e-05,
+    "wall_time_sec": 0.0,
+    "converged": false
+  },
+  {
+    "optimizer": "Momentum",
+    "problem": "quadratic_kappa_5",
+    "iterations": 394,
+    "final_loss": -2.125000694788412,
+    "final_grad_norm": 8.358972525216851e-09,
+    "wall_time_sec": 0.0,
+    "converged": true
+  },
+  {
+    "optimizer": "Adam",
+    "problem": "quadratic_kappa_5",
+    "iterations": 500,
+    "final_loss": -2.1250006947884117,
+    "final_grad_norm": 1.08021979953567e-08,
+    "wall_time_sec": 0.0,
+    "converged": false
+  },
+  {
+    "optimizer": "GD",
+    "problem": "quadratic_kappa_100",
+    "iterations": 500,
+    "final_loss": -0.43286501425299617,
+    "final_grad_norm": 0.5432830565718374,
+    "wall_time_sec": 0.0,
+    "converged": false
+  },
+  {
+    "optimizer": "Momentum",
+    "problem": "quadratic_kappa_100",
+    "iterations": 500,
+    "final_loss": -1.532701707106805,
+    "final_grad_norm": 0.06518748697915179,
+    "wall_time_sec": 0.0,
+    "converged": false
+  },
+  {
+    "optimizer": "Adam",
+    "problem": "quadratic_kappa_100",
+    "iterations": 500,
+    "final_loss": -1.6520918352926341,
+    "final_grad_norm": 0.021267517584938916,
+    "wall_time_sec": 0.0,
+    "converged": false
+  },
+  {
+    "optimizer": "GD",
+    "problem": "logistic_regression",
+    "iterations": 210,
+    "final_loss": 0.5159826210254037,
+    "final_grad_norm": 9.720450705154331e-09,
+    "wall_time_sec": 0.041760240999792586,
+    "converged": true
+  },
+  {
+    "optimizer": "Momentum",
+    "problem": "logistic_regression",
+    "iterations": 321,
+    "final_loss": 0.5159826210254036,
+    "final_grad_norm": 9.047232800697316e-09,
+    "wall_time_sec": 0.028560665999975754,
+    "converged": true
+  },
+  {
+    "optimizer": "Adam",
+    "problem": "logistic_regression",
+    "iterations": 302,
+    "final_loss": 0.5159826210254036,
+    "final_grad_norm": 7.730759033234554e-09,
+    "wall_time_sec": 0.03451192100055778,
+    "converged": true
+  }
+]

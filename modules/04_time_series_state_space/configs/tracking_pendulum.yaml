@@ -1,0 +1,26 @@
+name: "tracking_pendulum_ekf"
+seed: 42
+output_dir: "reports/tracking_pendulum"
+log_level: "INFO"
+
+# Simulation
+n_timesteps: 150
+dt: 0.05
+
+# System
+system: "pendulum"
+process_noise: 0.05
+obs_noise: 0.1
+
+# Pendulum parameters
+pendulum_length: 1.0
+gravity: 9.81
+initial_angle: 0.5
+initial_velocity: 0.0
+
+# Filter
+filter_type: "ekf"
+n_particles: 1000
+
+# Output
+save_plots: true

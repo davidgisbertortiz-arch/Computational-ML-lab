@@ -1,0 +1,35 @@
+# Numerical Toolbox Configuration Example
+# Copy and modify this file for your experiments
+
+experiment:
+  name: "optimizer_comparison"
+  seed: 42
+  output_dir: "modules/01_numerical_toolbox/reports"
+
+problem:
+  type: "quadratic_bowl"  # or "linear_regression", "rosenbrock"
+  n_dim: 2
+  condition_number: 100.0
+
+optimizer:
+  type: "adam"  # or "gd", "momentum"
+  learning_rate: 0.1
+  max_iter: 200
+  tol: 1.0e-6
+  
+  # Momentum-specific
+  momentum: 0.9
+  
+  # Adam-specific
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-8
+
+initial_point:
+  - 10.0
+  - 10.0
+
+visualization:
+  plot_trajectory: true
+  plot_convergence: true
+  save_figures: true

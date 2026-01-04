@@ -1,0 +1,26 @@
+{
+  "Raw predict_proba": {
+    "Accuracy": "0.7825",
+    "NLL": "0.5140",
+    "Brier Score": "0.1670",
+    "ECE": "0.0672"
+  },
+  "Temperature Scaling": {
+    "Accuracy": "0.7825",
+    "NLL": "0.6518",
+    "Brier Score": "0.2308",
+    "ECE": "0.1742"
+  },
+  "Bootstrap Ensemble": {
+    "Accuracy": "0.7850",
+    "NLL": "0.5152",
+    "Brier Score": "0.1673",
+    "ECE": "0.0743"
+  },
+  "Ensemble + TempScale": {
+    "Accuracy": "0.7850",
+    "NLL": "0.6520",
+    "Brier Score": "0.2309",
+    "ECE": "0.1741"
+  }
+}

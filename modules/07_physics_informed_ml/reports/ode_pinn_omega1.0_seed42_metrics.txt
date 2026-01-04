@@ -1,0 +1,4 @@
+l2_error_scipy: 0.07830888980034592
+l2_error_analytical: 0.07830889443962424
+energy_violation_percent: 8.53830873966217
+final_loss: 0.00105745205655694

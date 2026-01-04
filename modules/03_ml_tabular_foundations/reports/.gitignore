@@ -1,0 +1,4 @@
+# Ignore all generated outputs
+*
+# But track the directory structure
+!.gitignore

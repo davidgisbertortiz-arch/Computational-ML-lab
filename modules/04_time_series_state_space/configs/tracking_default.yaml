@@ -1,0 +1,20 @@
+name: "tracking_constant_velocity"
+seed: 42
+output_dir: "reports/tracking_cv"
+log_level: "INFO"
+
+# Simulation
+n_timesteps: 100
+dt: 0.1
+
+# System
+system: "constant_velocity"
+process_noise: 0.01
+obs_noise: 0.5
+
+# Filter
+filter_type: "kalman"
+n_particles: 1000
+
+# Output
+save_plots: true
