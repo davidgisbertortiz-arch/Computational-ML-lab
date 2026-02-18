@@ -1,8 +1,9 @@
 """Module template generator for creating new modules."""
 
-import typer
+import json
 from pathlib import Path
-import shutil
+
+import typer
 
 app = typer.Typer(help="Generate a new module from template")
 
@@ -110,27 +111,27 @@ if __name__ == \"__main__\":
 
 TEST_TEMPLATE = """\"\"\"Tests for Module {number}.\"\"\"
 
-import pytest
 import numpy as np
+import pytest
+from modules._import_helper import safe_import_from
 
 
 class TestPlaceholder:
     \"\"\"Placeholder tests.\"\"\"
-    
+
     def test_example(self):
         \"\"\"Example test.\"\"\"
         assert True
-    
+
     def test_seeding(self):
         \"\"\"Test reproducibility.\"\"\"
-        from modules.00_repo_standards.src.mlphys_core import set_seed
-        
+        set_seed = safe_import_from('00_repo_standards.src.mlphys_core', 'set_seed')
         set_seed(42)
         x1 = np.random.randn(10)
-        
+
         set_seed(42)
         x2 = np.random.randn(10)
-        
+
         assert np.array_equal(x1, x2)
 
 
@@ -173,13 +174,12 @@ def create(
 ) -> None:
     """
     Create a new module from template.
-    
+
     Example:
         python modules/00_repo_standards/create_module.py create \
             05_simulation_monte_carlo \
             --description "Monte Carlo methods"
     """
-    # Parse module name
     if not name.startswith("modules/"):
         if not any(name.startswith(f"{i:02d}_") for i in range(20)):
             typer.secho(
@@ -189,8 +189,7 @@ def create(
         module_name = name
     else:
         module_name = name.replace("modules/", "")
-    
-    # Extract number and title
+
     parts = module_name.split("_", 1)
     if len(parts) == 2 and parts[0].isdigit():
         number = parts[0]
@@ -198,14 +197,12 @@ def create(
     else:
         number = "XX"
         title = module_name.replace("_", " ").title()
-    
+
     if not description:
         description = title
-    
-    # Module path
+
     module_path = Path("modules") / module_name
-    
-    # Check if exists
+
     if module_path.exists() and not force:
         typer.secho(
             f"Module already exists: {module_path}",
@@ -213,20 +210,18 @@ def create(
         )
         typer.echo("Use --force to overwrite")
         raise typer.Exit(1)
-    
+
     typer.echo(f"Creating module: {module_name}")
     typer.echo(f"  Number: {number}")
     typer.echo(f"  Title: {title}")
     typer.echo(f"  Description: {description}")
     typer.echo("")
-    
-    # Create directory structure
+
     subdirs = ["src", "tests", "notebooks", "configs", "reports"]
     for subdir in subdirs:
         (module_path / subdir).mkdir(parents=True, exist_ok=True)
         typer.echo(f"  Created {module_path / subdir}/")
-    
-    # Create README
+
     readme_path = module_path / "README.md"
     readme_content = MODULE_README_TEMPLATE.format(
         number=number,
@@ -235,31 +230,26 @@ def create(
     )
     readme_path.write_text(readme_content)
     typer.echo(f"  Created {readme_path}")
-    
-    # Create src/__init__.py
+
     init_path = module_path / "src" / "__init__.py"
     init_content = INIT_PY_TEMPLATE.format(number=number, title=title)
     init_path.write_text(init_content)
     typer.echo(f"  Created {init_path}")
-    
-    # Create src/main.py
+
     main_path = module_path / "src" / "main.py"
     main_content = MAIN_PY_TEMPLATE.format(number=number, title=title)
     main_path.write_text(main_content)
     typer.echo(f"  Created {main_path}")
-    
-    # Create tests/__init__.py
+
     test_init_path = module_path / "tests" / "__init__.py"
     test_init_path.write_text('"""Tests for module."""\n')
     typer.echo(f"  Created {test_init_path}")
-    
-    # Create tests/test_module.py
+
     test_path = module_path / "tests" / "test_module.py"
     test_content = TEST_TEMPLATE.format(number=number, title=title)
     test_path.write_text(test_content)
     typer.echo(f"  Created {test_path}")
-    
-    # Create config
+
     config_path = module_path / "configs" / "experiment.yaml"
     config_content = CONFIG_TEMPLATE.format(
         number=number,
@@ -267,39 +257,37 @@ def create(
     )
     config_path.write_text(config_content)
     typer.echo(f"  Created {config_path}")
-    
-    # Create placeholder notebook
+
     notebook_path = module_path / "notebooks" / "01_exploration.ipynb"
     notebook_content = {
         "cells": [
             {
                 "cell_type": "markdown",
                 "metadata": {},
-                "source": [f"# Module {number}: {title}\\n\\nExploration notebook"]
+                "source": [f"# Module {number}: {title}\\n\\nExploration notebook"],
             },
             {
                 "cell_type": "code",
                 "execution_count": None,
                 "metadata": {},
                 "source": ["# TODO: Add exploration code"],
-                "outputs": []
-            }
+                "outputs": [],
+            },
         ],
         "metadata": {
             "kernelspec": {
                 "display_name": "Python 3",
                 "language": "python",
-                "name": "python3"
+                "name": "python3",
             }
         },
         "nbformat": 4,
-        "nbformat_minor": 4
+        "nbformat_minor": 4,
     }
-    import json
     with open(notebook_path, "w") as f:
         json.dump(notebook_content, f, indent=2)
     typer.echo(f"  Created {notebook_path}")
-    
+
     typer.echo("")
     typer.secho("✓ Module created successfully!", fg=typer.colors.GREEN)
     typer.echo("")

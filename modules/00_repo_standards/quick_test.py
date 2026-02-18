@@ -4,9 +4,9 @@
 import sys
 from pathlib import Path
 
-# Add repo root to path
-repo_root = Path(__file__).parent.parent
-sys.path.insert(0, str(repo_root))
+import numpy as np
+
+from modules._import_helper import safe_import_from
 
 print("=" * 60)
 print("Testing Module 00: Repository Standards")
@@ -16,12 +16,13 @@ print()
 # Test 1: Import mlphys_core
 print("✓ Test 1: Importing mlphys_core...")
 try:
-    from modules.00_repo_standards.src.mlphys_core import (
-        ExperimentConfig,
-        load_config,
-        set_seed,
-        setup_logger,
-        BaseExperiment,
+    ExperimentConfig, load_config, set_seed, setup_logger, BaseExperiment = safe_import_from(
+        "00_repo_standards.src.mlphys_core",
+        "ExperimentConfig",
+        "load_config",
+        "set_seed",
+        "setup_logger",
+        "BaseExperiment",
     )
     print("  SUCCESS: All imports working")
 except Exception as e:
@@ -46,14 +47,12 @@ except Exception as e:
 # Test 3: Seeding
 print("\n✓ Test 3: Testing deterministic seeding...")
 try:
-    import numpy as np
-    
     set_seed(42)
     x1 = np.random.randn(10)
-    
+
     set_seed(42)
     x2 = np.random.randn(10)
-    
+
     assert np.array_equal(x1, x2), "Seeding not deterministic!"
     print("  SUCCESS: Seeding is deterministic")
 except Exception as e:
@@ -73,9 +72,10 @@ except Exception as e:
 # Test 5: Demo experiment import
 print("\n✓ Test 5: Importing demo experiment...")
 try:
-    from modules.00_repo_standards.src.demo_experiment import (
-        DemoConfig,
-        DemoExperiment,
+    DemoConfig, DemoExperiment = safe_import_from(
+        "00_repo_standards.src.demo_experiment",
+        "DemoConfig",
+        "DemoExperiment",
     )
     print("  SUCCESS: Demo experiment imports working")
 except Exception as e:
@@ -105,6 +105,6 @@ print("=" * 60)
 print()
 print("Next steps:")
 print("  1. Run full test suite: pytest modules/00_repo_standards/tests/ -v")
-print("  2. Run demo: python -m modules.00_repo_standards.run_demo --seed 42")
+print("  2. Run demo: python -m modules.run demo --module 00 --seed 42")
 print("  3. Check linting: ruff check modules/00_repo_standards/")
 print("  4. Format code: black modules/00_repo_standards/")

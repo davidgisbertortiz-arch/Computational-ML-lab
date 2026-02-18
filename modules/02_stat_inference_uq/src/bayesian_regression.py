@@ -4,9 +4,10 @@ Implements conjugate Bayesian inference for linear regression, providing
 posterior distributions over parameters and predictive distributions with uncertainty.
 """
 
-import numpy as np
 from dataclasses import dataclass
 from typing import Optional, Tuple
+
+import numpy as np
 
 
 @dataclass
@@ -177,7 +178,8 @@ class BayesianLinearRegression:
             samples: Parameter samples (n_samples, n_features)
             
         Example:
-            >>> from modules.00_repo_standards.src.mlphys_core import get_rng
+            >>> from modules._import_helper import safe_import_from
+            >>> get_rng = safe_import_from('00_repo_standards.src.mlphys_core', 'get_rng')
             >>> rng = get_rng(42)
             >>> w_samples = model.sample_parameters(n_samples=1000, rng=rng)
             >>> # Monte Carlo estimate of prediction uncertainty
