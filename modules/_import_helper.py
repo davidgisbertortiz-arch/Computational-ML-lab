@@ -5,16 +5,14 @@ Python 3.12+ interprets `from modules.02_name` as an invalid octal literal.
 This helper provides safe import functions that bypass the lexer issue.
 
 Usage:
-    from modules._import_helper import safe_import
+    from modules._import_helper import safe_import_from
     
     # Instead of: from modules.02_stat_inference_uq.src.bayesian_regression import BayesianLinearRegression
-    _mod = safe_import('02_stat_inference_uq.src.bayesian_regression')
-    BayesianLinearRegression = _mod.BayesianLinearRegression
+    BayesianLinearRegression = safe_import_from('02_stat_inference_uq.src.bayesian_regression', 'BayesianLinearRegression')
 """
 
 import importlib
-import sys
-from typing import Any
+from typing import Any, Union
 
 
 def safe_import(module_path: str) -> Any:
@@ -34,10 +32,17 @@ def safe_import(module_path: str) -> Any:
         >>> BayesianLinearRegression = _bayes.BayesianLinearRegression
     """
     full_path = f'modules.{module_path}'
-    return importlib.import_module(full_path)
+    try:
+        return importlib.import_module(full_path)
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            f"Cannot import '{full_path}'. "
+            f"Ensure module path is correct and excludes 'modules.' prefix. "
+            f"Example: '00_repo_standards.src.core' not 'modules.00_repo_standards.src.core'"
+        ) from e
 
 
-def safe_import_from(module_path: str, *names: str) -> tuple:
+def safe_import_from(module_path: str, *names: str) -> Union[Any, tuple[Any, ...]]:
     """
     Safely import specific names from a module with numeric prefix.
     
@@ -46,9 +51,13 @@ def safe_import_from(module_path: str, *names: str) -> tuple:
         *names: Names to import from the module
     
     Returns:
-        Tuple of imported objects (single object if only one name)
+        Single object if one name provided, tuple of objects if multiple names
     
     Example:
+        >>> # Single import
+        >>> set_seed = safe_import_from('00_repo_standards.src.mlphys_core', 'set_seed')
+        >>> 
+        >>> # Multiple imports
         >>> BayesianLinearRegression, posterior_predictive = safe_import_from(
         ...     '02_stat_inference_uq.src.bayesian_regression',
         ...     'BayesianLinearRegression', 'posterior_predictive'

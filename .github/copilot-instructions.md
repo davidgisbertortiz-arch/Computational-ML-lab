@@ -10,16 +10,26 @@ make test                              # Run all tests with coverage (>80% targe
 make test-module MODULE=07_physics_informed_ml  # Test specific module
 make test-fast                         # Quick test (stop on first failure)
 make lint && make format               # Check and fix code quality (Ruff + Black + MyPy)
-make run-module MODULE=XX_name ARGS="..." # Run module CLI entry point (note: use module folder name)
 make mlflow-ui                         # Launch MLflow tracking UI (port 5000)
 make setup                             # First-time setup: install deps + pre-commit hooks
+
+# Universal module runner (ALWAYS use this, never python -m modules.0X_...)
+python -m modules.run list             # List all available modules
+python -m modules.run run --module 00  # Run module 00's entrypoint
+python -m modules.run run --module 03_ml_tabular_foundations  # Run by full name
+python -m modules.run demo --module 00 --seed 42  # Run with specific seed
+
+# Module creation
 python modules/00_repo_standards/create_module.py --number XX --title "Name"  # Scaffold new module
 ```
 
 **Command gotchas**:
-- Module names for `make run-module` use folder names (e.g., `MODULE=06_deep_learning_systems`)
+- **NEVER** use `python -m modules.0X_name` - ALWAYS use `python -m modules.run run --module 0X`
+- Module IDs can be numeric prefix ('00', '03') or full name ('00_repo_standards')
 - Always run `make` commands from repo root
 - MLflow UI runs on port 5000 (http://localhost:5000) - don't forget to open in browser
+- Before committing, test that your module runs: `python -m modules.run run --module XX`
+- Dev environment: Ubuntu 24.04.3 LTS in VS Code dev container with Python 3.11+
 
 ### Critical Import Pattern (Python 3.12+ Workaround)
 ```python
@@ -30,7 +40,19 @@ MyClass = safe_import_from('XX_module.src.file', 'MyClass')
 
 # ❌ NEVER use this - will cause SyntaxError in Python 3.12+
 from modules.07_physics_informed_ml.src import PINN  # SyntaxError!
+from modules.03_ml_tabular_foundations.src import *  # SyntaxError!
+import modules.02_stat_inference_uq  # SyntaxError!
 ```
+
+**🚨 CRITICAL RULE - NEVER VIOLATE THIS:**
+- **NEVER** write `from modules.0X_...` or `import modules.0X_...` in ANY code or documentation
+- **NEVER** suggest running `python -m modules.0X_...` commands - use `python -m modules.run` instead
+- **ALWAYS** use `safe_import_from()` for cross-module imports with numeric prefixes
+- **ALWAYS** verify imports work before committing code examples to instructions or README files
+- **Within same package**: Use relative imports (e.g., `from .config import ExperimentConfig` in mlphys_core)
+- **Across modules**: Use `safe_import_from()` (e.g., importing from module 02 in module 05)
+
+**Why this matters**: Python 3.12+ lexer interprets `modules.02_` as an invalid octal literal before checking module names. The `safe_import_from()` helper uses `importlib.import_module()` which bypasses the lexer. See [docs/getting-started/python312-imports.md](../docs/getting-started/python312-imports.md) for full details.
 
 ### Module Progression & Status
 - ✅ **00** (repo standards) → **01** (numerical) → **02** (stats/UQ) → **03** (tabular ML) → **04** (time series) → **05** (Monte Carlo) → **06** (deep learning) → **07** (physics-informed)
@@ -85,7 +107,7 @@ from .experiment import BaseExperiment
 
 ### Across Modules: Import Helper
 ```python
-# ✅ In modules/02_stat_inference_uq/tests/test_something.py
+# ✅ OPTION 1: Use safe_import_from (preferred, cleaner syntax)
 from modules._import_helper import safe_import_from
 
 # Import from another numeric module (can destructure multiple names)
@@ -97,6 +119,11 @@ BayesianLinearRegression = safe_import_from(
     '02_stat_inference_uq.src.bayesian_regression',
     'BayesianLinearRegression'
 )
+
+# ✅ OPTION 2: Use importlib directly (e.g., in main.py when many imports)
+import importlib
+_core = importlib.import_module('modules.00_repo_standards.src.core')
+gradient_descent = _core.gradient_descent
 
 # ❌ NEVER DO THIS - Will fail in Python 3.12+
 from modules.00_repo_standards.src.mlphys_core import set_seed  # SyntaxError!
@@ -180,18 +207,78 @@ def test_optimizer_decreases_loss(self):
 - `make test-fast` - Quick tests without coverage (`-x` stops on first failure)
 - `make lint` - Ruff + Black + MyPy checks
 - `make format` - Auto-fix formatting
-- `make run-module MODULE=XX_name ARGS="--help"` - Run module CLI
+- `make run-module MODULE=XX_name ARGS="--help"` - Run module CLI (DEPRECATED - use `python -m modules.run` instead)
 - `make mlflow-ui` - View experiment tracking at http://localhost:5000
 - `make clean` - Remove `__pycache__`, `.pytest_cache`, coverage reports
 
 **Adding a new module**:
 1. Use `python modules/00_repo_standards/create_module.py --number XX --title "Name"` for scaffolding
-2. Extend `ExperimentConfig` for module-specific config schema
-3. Inherit from `BaseExperiment` for standard experiment structure (see [modules/00_repo_standards/src/mlphys_core/experiment.py](../modules/00_repo_standards/src/mlphys_core/experiment.py))
-4. Add tests before implementation (TDD encouraged)
-5. Update module README with completion checklist
+2. Add entrypoint: `run_demo.py` (preferred) or `quick_test.py` or extend `src/main.py`
+   - `run_demo.py`: User-facing demo with Typer CLI (preferred for complete modules)
+   - `quick_test.py`: Quick sanity checks without pytest (for development)
+   - `src/main.py`: Full CLI with multiple commands (use Typer `app`)
+3. Entrypoint must have `main()` function or Typer `app` variable
+4. Extend `ExperimentConfig` for module-specific config schema
+5. Inherit from `BaseExperiment` for standard experiment structure (see example below)
+6. Add tests before implementation (TDD encouraged)
+7. Verify runner works: `python -m modules.run run --module XX`
+8. Update module README with completion checklist
 
-**Module CLI pattern**: Modules expose Typer CLIs at `src/main.py` - run via `python -m modules.XX_name.src.main train --config configs/exp.yaml --seed 123`
+**BaseExperiment example**:
+```python
+from modules._import_helper import safe_import_from
+from pathlib import Path
+
+BaseExperiment, ExperimentConfig = safe_import_from(
+    '00_repo_standards.src.mlphys_core',
+    'BaseExperiment', 'ExperimentConfig'
+)
+
+class MyConfig(ExperimentConfig):
+    """Module-specific config extending base."""
+    learning_rate: float = 0.01
+    max_epochs: int = 100
+
+class MyExperiment(BaseExperiment):
+    """Experiment implementing required methods."""
+    
+    def __init__(self, config: MyConfig):
+        module_dir = Path(__file__).parent.parent  # Point to module root
+        super().__init__(config, module_dir)
+        self.config: MyConfig = config  # Type hint for IDE support
+    
+    def prepare_data(self):
+        # Load/generate data
+        return {"X_train": ..., "y_train": ...}
+    
+    def build_model(self):
+        # Initialize model
+        return MyModel()
+    
+    def train(self, model, data):
+        # Training loop
+        model.fit(data["X_train"], data["y_train"])
+        return model
+    
+    def evaluate(self, model, data):
+        # Return metrics dict
+        return {"accuracy": 0.95, "loss": 0.15}
+
+# Usage in run_demo.py or main.py:
+config = load_config(Path("configs/exp.yaml"), MyConfig)
+exp = MyExperiment(config)
+metrics = exp.run()  # Handles logging, seeding, git tracking automatically
+```
+
+**Module CLI pattern**: Modules expose entrypoints via the universal runner:
+- Run via: `python -m modules.run run --module XX`
+- Or with full name: `python -m modules.run run --module XX_name`
+- Check module status: `python -m modules.run list`
+- Entrypoint priority: `run_demo.py` > `quick_test.py` > `src/main.py`
+
+**DEPRECATED (DO NOT USE)**:
+- ❌ `python -m modules.XX_name.src.main` - causes SyntaxError in Python 3.12+
+- ❌ `make run-module MODULE=XX_name` - old pattern, use runner instead
 
 ## Configuration Pattern
 
@@ -284,12 +371,13 @@ Optional tracking enabled via `config.mlflow_tracking = True`:
 2. **RNG state**: Call `set_seed()` at experiment start, not inside functions (unless using isolated RNG via `get_rng()`)
 3. **Path handling**: Config `output_dir` auto-resolves relative to module dir (see `BaseExperiment.__init__`)
 4. **PyTorch seeding**: `set_seed()` handles torch.manual_seed if PyTorch available
-5. **Test isolation**: Tests run from repo root, so use `Path("modules/XX/configs/...")` not `Path("configs/...")`
-6. **safe_import_from destructuring**: Returns tuple if multiple names, single value if one name. For single values, use: `value = safe_import_from(..., 'name')` not `(value,) = ...`
+5. **Test isolation**: Tests run from repo root, so use absolute paths from repo root
+6. **Single value destructuring**: Use `value = safe_import_from(..., 'name')` not `(value,) = ...`
 7. **Module paths**: In `safe_import_from()`, always exclude `modules.` prefix - use `'00_repo_standards.src.mlphys_core'`
 8. **Notebook imports**: In notebooks, import via `safe_import_from()` - never use standard imports for numeric-prefixed modules
-9. **Running Python modules**: Use `python -m modules.XX_name.src.main` not `python modules/XX_name/src/main.py` to preserve import paths
+9. **Running modules**: Use `python -m modules.run run --module XX` not `python -m modules.XX_name.src.main` to avoid import syntax errors
 10. **Git tracking**: The `reports/` directory is gitignored - outputs won't be committed (by design for reproducibility)
+11. **Code examples in docs**: Before adding command examples to README/docs, verify they work with the runner
 
 ## Module-Specific Patterns
 
@@ -300,14 +388,16 @@ Every module README follows this pattern (enforced by `create_module.py` scaffol
 - **Theory**: Minimal background (not a textbook)
 - **Implementation Plan**: Checklist of tasks
 - **Experiments & Metrics**: What to measure and baselines
-- **Failure Modes**: Common pitfalls with solutions
-- **Resources**: Papers, tutorials, documentation
+- **Failure Modes**: Common pitfalls
 
-### Notebooks vs Tests vs Experiments
-- **`notebooks/`**: Interactive exploration, visualization, educational demos (not tested)
-- **`tests/`**: Pytest unit/integration tests for code correctness (>80% coverage)
-- **`experiments/`**: Standalone scripts for benchmarks/ablations (optional, when too complex for notebooks)
+### Experiments vs Quick Tests vs Notebooks
 - **`src/`**: Library-quality implementations imported everywhere
+- **`run_demo.py`**: Main entrypoint with Typer CLI for showcasing module functionality (preferred)
+- **`quick_test.py`**: Minimal sanity checks during development (runs basic functionality without pytest)
+- **`src/main.py`**: Full CLI with multiple subcommands for complex modules (uses Typer `app`)
+- **`notebooks/`**: Interactive exploration, visualization, educational demos (not tested)
+- **`tests/`**: Pytest unit/integration tests for code correctness (>80% coverage target)
+- **`experiments/`**: Standalone scripts for benchmarks/ablations (optional, when too complex for notebooks)
 
 ## Adding Dependencies
 

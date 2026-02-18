@@ -1,59 +1,50 @@
-# Data Directory
+# Data policy
 
-This directory is for storing datasets used in experiments.
+This repository does **not** track runtime datasets or large binary artifacts in git.
 
-## Guidelines
+## What belongs in `data/`
 
-1. **Git Ignore**: By default, this directory is gitignored to prevent large files from being committed
-2. **Small Data**: If you have small (<1MB) sample datasets, they can be committed with git
-3. **Large Data**: For large datasets:
-   - Store externally (e.g., cloud storage, public repositories)
-   - Provide download scripts in module's `src/` directory
-   - Document download instructions in module README
+- Lightweight metadata and docs (`README`, schema notes, source manifests)
+- Fetch/generate scripts (`*.py`) that reproduce datasets locally
+- Optional placeholders (`.gitkeep`) to preserve folder structure
 
-## Structure
+## What must not be committed
 
-Organize data by module:
+- Downloaded raw datasets
+- Preprocessed data dumps and feature stores
+- Large binaries (`.csv`, `.parquet`, `.npz`, `.npy`, `.pt`, `.pth`, etc.)
 
-```
-data/
-├── 01_numerical_toolbox/
-│   └── sample_matrices.npz
-├── 03_ml_tabular_foundations/
-│   ├── download.py
-│   └── preprocessed/
-├── 04_time_series_state_space/
-│   └── synthetic_timeseries.csv
-└── README.md (this file)
-```
+The root `.gitignore` is configured to ignore `data/**` by default, while keeping this README
+and scripts/documentation trackable.
 
-## Example Download Script
+## Recommended workflow
+
+1. Add a module-local script to fetch data from the original source.
+2. Save local outputs under `data/<module_name>/`.
+3. Document source URL, expected version/date, and checksum in the module README.
+4. For synthetic experiments, generate data from code with a fixed seed.
+
+## Example fetch script
 
 ```python
-# modules/XX_module/src/download_data.py
-import urllib.request
 from pathlib import Path
+import urllib.request
 
-def download_dataset(output_dir: Path):
-    """Download dataset from public source."""
-    url = "https://example.com/dataset.csv"
+
+def fetch_data() -> Path:
+    output_dir = Path("data/03_ml_tabular_foundations")
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "dataset.csv"
-    
-    if not output_path.exists():
-        print(f"Downloading {url}...")
-        urllib.request.urlretrieve(url, output_path)
-        print(f"Saved to {output_path}")
-    else:
-        print(f"Dataset already exists at {output_path}")
 
-if __name__ == "__main__":
-    download_dataset(Path("data/XX_module"))
+    if not output_path.exists():
+        urllib.request.urlretrieve("https://example.com/dataset.csv", output_path)
+
+    return output_path
 ```
 
-## Best Practices
+## Reproducibility checklist
 
-- **Reproducibility**: Document exact data sources and versions
-- **Preprocessing**: Save preprocessing steps as code, not just preprocessed data
-- **Validation**: Include data checksums (MD5/SHA256) to verify integrity
-- **Synthetic Data**: When possible, generate synthetic data in code for full reproducibility
+- Keep data acquisition fully scripted
+- Record dataset version/checksum
+- Keep preprocessing in code (not manual steps)
+- Use deterministic seeds (`set_seed(...)`) for generated data

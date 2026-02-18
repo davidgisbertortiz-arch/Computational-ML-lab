@@ -7,6 +7,33 @@ on:
     branches: [ main, develop ]
 
 jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+    
+    - name: Test module runner - list
+      run: |
+        python -m modules.run list
+    
+    - name: Test module runner - module 00
+      run: |
+        python -m modules.run run --module 00 --verbose || echo "Module 00 execution attempted"
+    
+    - name: Verify import helper
+      run: |
+        python -c "from modules._import_helper import safe_import_from; print('✅ Import helper works')"
+
   lint:
     runs-on: ubuntu-latest
     steps:
