@@ -41,6 +41,8 @@ nav:
   - Getting Started:
     - Setup: getting-started/setup.md
     - Module Structure: getting-started/module-structure.md
+    - Python 3.12+ Imports: getting-started/python312-imports.md
+    - MLflow Tracking: getting-started/mlflow-tracking.md
   - Modules:
     - Overview: modules/overview.md
   - Contributing: contributing.md

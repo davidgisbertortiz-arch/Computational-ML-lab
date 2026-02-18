@@ -32,13 +32,16 @@ format:  ## Auto-format code with black and ruff
 	ruff check --fix .
 	black .
 
-clean:  ## Remove cache, build artifacts, and coverage reports
+clean:  ## Remove cache, build artifacts, coverage reports, and MLflow artifacts
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete
 	rm -rf build/ dist/ *.egg-info htmlcov/ .coverage
+	@echo "🧹 Cleaning MLflow artifacts..."
+	rm -rf mlruns/ mlartifacts/ mlflow.db *.db-shm *.db-wal .mlflow/
+	@echo "✅ Cleanup complete!"
 
 docs:  ## Build documentation
 	mkdocs build

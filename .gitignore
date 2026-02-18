@@ -3,6 +3,33 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Repository runtime/build artifacts (explicit)
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+dist/
+build/
+
+# MLflow runtime artifacts (generated at runtime, not committed)
+# Local tracking DB and experiment artifacts
+mlflow.db
+*.db
+*.db-shm
+*.db-wal
+mlruns/
+mlartifacts/
+# Cached models and artifacts
+artifacts/
+.mlflow/
+
+# Local data artifacts (keep docs/scripts only)
+data/**
+!data/README.md
+!data/**/*.md
+!data/**/*.py
+!data/**/.gitkeep
+
 # C extensions
 *.so
 
@@ -73,21 +100,15 @@ venv.bak/
 *~
 .DS_Store
 
-# MLflow
-mlruns/
-mlartifacts/
-
-# Data
-data/*
-!data/.gitkeep
-!data/README.md
-
-# Reports (git LFS or ignore large artifacts)
-reports/*.png
-reports/*.pdf
-reports/*.h5
-reports/*.pth
-reports/*.ckpt
+# Experiment outputs and artifacts (generated at runtime)
+outputs/
+artifacts/
+**/reports/_generated/
+**/reports/*.png
+**/reports/*.pdf
+**/reports/*.h5
+**/reports/*.pth
+**/reports/*.ckpt
 *.weights
 
 # Mypy

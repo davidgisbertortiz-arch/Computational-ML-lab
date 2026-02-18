@@ -103,12 +103,20 @@ make docs
 
 ## MLflow Tracking
 
+MLflow is **optional** for experiment tracking. The local database (`mlflow.db`) and run artifacts (`mlruns/`) are generated at runtime and not committed to version control.
+
 View experiment results:
 
 ```bash
 make mlflow-ui
 # Open http://localhost:5000
 ```
+
+**Note**: 
+- If MLflow is not configured, experiments will still run normally without tracking
+- Enable tracking per experiment via `config.mlflow_tracking = True` in YAML configs
+- Local artifacts can be cleaned with `make clean`
+- The system uses a local SQLite backend by default (no server setup required)
 
 ## Troubleshooting
 

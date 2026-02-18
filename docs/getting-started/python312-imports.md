@@ -8,7 +8,25 @@ Python 3.12+ interprets module names starting with digits (e.g., `modules.02_sta
 
 We use **two complementary approaches** depending on where the import occurs:
 
-### 1. Within Same Module Package: Relative Imports
+### 1. For Running Modules: Universal Runner
+
+For running modules from the command line, use the universal module runner:
+
+```bash
+# List all available modules
+python -m modules.run list
+
+# Run a module (by prefix or full name)
+python -m modules.run run --module 00
+python -m modules.run run --module 03_ml_tabular_foundations
+
+# Run with seed
+python -m modules.run demo --module 00 --seed 42
+```
+
+**NEVER use**: `python -m modules.03_ml_tabular_foundations.src.main` (will cause SyntaxError)
+
+### 2. Within Same Module Package: Relative Imports
 
 For imports within the same package/module, use **relative imports**:
 
@@ -24,7 +42,7 @@ from .seeding import set_seed
 
 **When to use:** Importing sibling modules within the same package.
 
-### 2. Across Modules: Import Helper
+### 3. Across Modules: Import Helper
 
 For imports **across different modules** (e.g., module 02 importing from module 00), use the `safe_import_from` helper:
 
@@ -47,7 +65,8 @@ BayesianLinearRegression, posterior_predictive = safe_import_from(
 ## Files Modified
 
 ### Core Infrastructure
-- `modules/_import_helper.py` - Created helper functions
+- `modules/run.py` - Universal module runner CLI (NEW)
+- `modules/_import_helper.py` - Helper functions with improved error messages
 - `modules/__init__.py` - Package initialization
 - `conftest.py` (root) - Pytest configuration to add repo to path
 - `modules/00_repo_standards/tests/conftest.py` - Module-specific pytest config
@@ -88,6 +107,11 @@ set_seed, get_rng = safe_import_from(
 
 # Import from your module (if needed across files)
 MyClass = safe_import_from('XX_my_module.src.my_file', 'MyClass')
+```
+
+For running modules, ALWAYS use the universal runner:
+```bash
+python -m modules.run run --module XX
 ```
 
 ## Why Not Just Rename Modules?
