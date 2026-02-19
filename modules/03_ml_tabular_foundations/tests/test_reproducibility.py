@@ -1,7 +1,8 @@
 """Tests for reproducibility with fixed seeds."""
 
-import pytest
 import numpy as np
+import pandas as pd
+import pytest
 from modules._import_helper import safe_import_from
 
 set_seed = safe_import_from('00_repo_standards.src.mlphys_core.seeding', 'set_seed')
