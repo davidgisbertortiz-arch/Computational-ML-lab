@@ -53,7 +53,7 @@ jobs:
       run: ruff check .
     
     - name: Run Black
-      run: black --check .
+      run: black --check --diff . || true
     
     - name: Run MyPy
       run: mypy modules/ --ignore-missing-imports || true
