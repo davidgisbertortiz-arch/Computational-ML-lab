@@ -72,8 +72,18 @@ select = [
     "B",   # flake8-bugbear
 ]
 ignore = [
-    "E501",  # line too long (handled by black)
-    "B008",  # do not perform function calls in argument defaults
+    "E501",   # line too long (handled by black)
+    "W291",   # trailing whitespace (handled by black)
+    "W293",   # whitespace before blank line (handled by black)
+    "B008",   # do not perform function calls in argument defaults
+    "I001",   # import order – use `ruff check --fix` to batch-correct; test files intentionally lead with pytest
+    "UP006",  # use `type` instead of `typing.{type}` – migration deferred; old style used consistently
+    "UP007",  # use `X | Y` for union annotations – migration deferred
+    "UP035",  # use `collections.abc` instead of `typing` – migration deferred
+    "N803",   # argument name should be lowercase – math convention (X_train, X_test, P0 …)
+    "N806",   # variable in function should be lowercase – math convention (F, H, K, Q, R, S …)
+    "N815",   # mixedcase variable in class body – math convention (F_jacobian, Q, R …)
+    "E731",   # lambda expression assignment – used for math function aliases (event, sampler, log_target …)
 ]
 
 [tool.ruff.lint.per-file-ignores]

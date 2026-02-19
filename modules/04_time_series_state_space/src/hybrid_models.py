@@ -6,11 +6,12 @@ Useful when parts of the dynamics or measurement model are unknown/complex.
 Key idea: Let NN learn what physics doesn't know, keep what physics does know.
 """
 
+from dataclasses import dataclass
+from typing import Callable, List, Optional, Tuple
+
 import numpy as np
 import torch
 import torch.nn as nn
-from typing import Tuple, Optional, Callable, List
-from dataclasses import dataclass
 
 
 class MeasurementNetwork(nn.Module):
@@ -32,10 +33,12 @@ class MeasurementNetwork(nn.Module):
         self,
         n_states: int,
         n_obs: int,
-        hidden_dims: List[int] = [32, 16],
+        hidden_dims: List[int] = None,
         activation: str = "tanh",
     ):
         super().__init__()
+        if hidden_dims is None:
+            hidden_dims = [32, 16]
         
         self.n_states = n_states
         self.n_obs = n_obs
@@ -103,10 +106,12 @@ class DynamicsResidualNetwork(nn.Module):
     def __init__(
         self,
         n_states: int,
-        hidden_dims: List[int] = [32, 16],
+        hidden_dims: List[int] = None,
         activation: str = "tanh",
     ):
         super().__init__()
+        if hidden_dims is None:
+            hidden_dims = [32, 16]
         
         self.n_states = n_states
         
